@@ -13,30 +13,41 @@ def emotion_detector(text_to_analyze):
     ### send post request 
     response = requests.post(url=url, headers=headers, json=input_json)
     
-    ### response in json format
-    response_json = json.loads(response.text)
+    ### Task 7 ---> modification for empty input, error 400
+    if response.status_code == 400:
+        ### create 'output' dictionary with 'None' for all keys.
+        output = {
+            'anger': 'None', 'disgust': 'None',
+            'fear': 'None', 'joy': 'None',
+            'sadness': 'None','dominant_emotion':'None'
+            }
     
-    ### access value of 'emotion' in a response dictionary
-    reponse_json = response_json['emotionPredictions'][0]['emotion']
-    
-    ### get scores for each emotion parameter
-    anger_score = reponse_json['anger']
-    disgust_score = reponse_json['disgust']
-    fear_score = reponse_json['fear']
-    joy_score = reponse_json['joy']
-    sadness_score = reponse_json['sadness']
-    
-    ### create 'output' dictionary
-    output = {
-        'anger': anger_score,
-        'disgust': disgust_score,
-        'fear': fear_score,
-        'joy': joy_score,
-        'sadness': sadness_score
-    }
-    ### define dominant emotion category/name using max() 
-    ### and add it to the final 'output' dictionary
-    output['dominant_emotion'] = max(output, key=output.get)
+    ### 'normal mode' ---> for status codes other than 400
+    else:
+        ### response in json format
+        response_json = json.loads(response.text)
+        
+        ### access value of 'emotion' in a response dictionary
+        reponse_json = response_json['emotionPredictions'][0]['emotion']
+        
+        ### get scores for each emotion parameter
+        anger_score = reponse_json['anger']
+        disgust_score = reponse_json['disgust']
+        fear_score = reponse_json['fear']
+        joy_score = reponse_json['joy']
+        sadness_score = reponse_json['sadness']
+        
+        ### create 'output' dictionary
+        output = {
+            'anger': anger_score,
+            'disgust': disgust_score,
+            'fear': fear_score,
+            'joy': joy_score,
+            'sadness': sadness_score
+        }
+        ### define dominant emotion category/name using max() 
+        ### and add it to the final 'output' dictionary
+        output['dominant_emotion'] = max(output, key=output.get)
     
     return output
 
